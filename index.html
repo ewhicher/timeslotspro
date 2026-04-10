@@ -1353,6 +1353,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   .slots-grid { grid-template-columns: repeat(2, 1fr); }
   .bp-iata { font-size: 2.5rem; }
 }
+
+/* Prevent iOS Safari auto-zoom on input focus — requires >= 16px */
+@media (max-width: 767px) {
+  .text-input,
+  .search-bar input {
+    font-size: 16px;
+  }
+}
 </style>
 </head>
 <body>
