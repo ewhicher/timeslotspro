@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="theme-color" content="#1A2B4F">
+<title>TimeSlotPro — Skip the security queue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — single source of truth
+   ============================================================ */
+:root {
+  /* Colour */
+  --bg: #F4F2EC;
+  --bg-deep: #EDEAE0;
+  --surface: #FFFFFF;
+  --surface-soft: #F8F6F0;
+  --line: #E6E2D5;
+  --line-strong: #D9D4C3;
+
+  --ink: #0F1729;
+  --ink-2: #4D5566;
+  --ink-3: #8B92A3;
+  --ink-4: #B6BAC4;
+
+  --brand: #1A2B4F;
+  --brand-deep: #0E1B36;
+  --brand-tint: #EEF0F6;
+
+  --accent: #FF5B36;
+  --accent-deep: #E54720;
+  --accent-tint: #FFEDE6;
+
+  --success: #1F7A4D;
+  --success-bg: #E5F1EA;
+  --success-line: #C8E2D2;
+
+  --warning: #B36900;
+  --warning-bg: #FBF1DA;
+  --warning-line: #F0DDA8;
+
+  --danger: #A82E1A;
+  --danger-bg: #FBE6E0;
+  --danger-line: #F1C8BC;
+
+  /* Type scale */
+  --font: 'Instrument Sans', -apple-system, system-ui, sans-serif;
+  --fs-xs: 0.6875rem;   /* 11 */
+  --fs-sm: 0.75rem;     /* 12 */
+  --fs-base: 0.875rem;  /* 14 */
+  --fs-md: 0.9375rem;   /* 15 */
+  --fs-lg: 1.0625rem;   /* 17 */
+  --fs-xl: 1.25rem;     /* 20 */
+  --fs-2xl: 1.625rem;   /* 26 */
+  --fs-3xl: 2.125rem;   /* 34 */
+  --fs-4xl: 2.875rem;   /* 46 */
+  --lh-tight: 1.1;
+  --lh-snug: 1.3;
+  --lh-base: 1.5;
+
+  /* Spacing */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-7: 1.75rem;
+  --s-8: 2rem;
+  --s-10: 2.5rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-2xl: 24px;
+  --r-3xl: 32px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 41, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 41, 0.06), 0 1px 2px rgba(15, 23, 41, 0.04);
+  --shadow-md: 0 4px 14px rgba(15, 23, 41, 0.07), 0 2px 4px rgba(15, 23, 41, 0.04);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 41, 0.10), 0 4px 12px rgba(15, 23, 41, 0.05);
+  --shadow-xl: 0 24px 64px rgba(15, 23, 41, 0.14), 0 8px 24px rgba(15, 23, 41, 0.06);
+  --ring-focus: 0 0 0 3px rgba(255, 91, 54, 0.2);
+  --ring-brand: 0 0 0 3px rgba(26, 43, 79, 0.15);
+
+  /* Motion */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 320ms;
+  --dur-fast: 180ms;
+  --dur-slow: 480ms;
+
+  /* Layout */
+  --drawer-max-w: 480px;
+}
+
+/* ============================================================
+   RESET / BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font);
+  font-size: var(--fs-md);
+  line-height: var(--lh-base);
+  color: var(--ink);
+  background: var(--bg);
+  font-feature-settings: 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; border: none; background: none; padding: 0; }
+input { border: none; background: none; outline: none; }
+input:focus-visible { outline: none; }
+h1, h2, h3, h4, p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   PAGE LAYOUT (background behind drawer)
+   ============================================================ */
+.page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(26, 43, 79, 0.08), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255, 91, 54, 0.06), transparent 60%),
+    var(--bg);
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s-6) var(--s-6);
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+.logo {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.logo-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-sm);
+  background: var(--brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.logo-mark::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  border-top-color: transparent;
+  border-right-color: transparent;
+}
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: var(--shadow-xs);
+}
+.demo-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: var(--s-8) var(--s-6) var(--s-12);
+  max-width: 720px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  margin-bottom: var(--s-6);
+  box-shadow: var(--shadow-xs);
+}
+.hero-eyebrow .pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  position: relative;
+}
+.hero-eyebrow .pulse::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--success);
+  opacity: 0.3;
+  animation: pulse 2s var(--ease) infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+.hero h1 {
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  margin-bottom: var(--s-5);
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--brand);
+  position: relative;
+  white-space: nowrap;
+}
+.hero h1 em::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0.05em;
+  height: 0.18em;
+  background: var(--accent);
+  opacity: 0.28;
+  border-radius: 2px;
+}
+.hero p {
+  font-size: var(--fs-lg);
+  color: var(--ink-2);
+  max-width: 520px;
+  margin-bottom: var(--s-8);
+  line-height: 1.55;
+}
+.hero-cta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-4);
+}
+.hero-stats {
+  display: flex;
+  gap: var(--s-8);
+  margin-top: var(--s-12);
+  padding-top: var(--s-8);
+  border-top: 1px solid var(--line);
+  width: 100%;
+  max-width: 560px;
+  justify-content: space-around;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat strong {
+  display: block;
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.hero-stat span {
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.page-footer {
+  text-align: center;
+  padding: var(--s-6);
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: var(--s-4) var(--s-6);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  border-radius: var(--r-md);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:focus-visible { box-shadow: var(--ring-focus); outline: none; }
+.btn:active { transform: scale(0.98); }
+.btn-primary {
+  background: var(--brand);
+  color: var(--surface);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.btn-primary:hover { background: var(--brand-deep); }
+.btn-accent {
+  background: var(--accent);
+  color: var(--surface);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.btn-accent:hover { background: var(--accent-deep); }
+.btn-block { width: 100%; }
+.btn-lg { padding: var(--s-5) var(--s-8); font-size: var(--fs-lg); border-radius: var(--r-lg); }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-2);
+  padding: var(--s-3) var(--s-4);
+  font-size: var(--fs-base);
+  border-radius: var(--r-md);
+}
+.btn-ghost:hover { background: var(--bg-deep); color: var(--ink); }
+
+/* ============================================================
+   DRAWER / SHEET
+   ============================================================ */
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+.drawer.open { pointer-events: auto; }
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 41, 0.32);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.drawer.open .drawer-backdrop { opacity: 1; }
+
+.drawer-content {
+  position: relative;
+  width: 100%;
+  max-width: var(--drawer-max-w);
+  height: 94vh;
+  height: 94dvh;
+  background: var(--surface);
+  border-radius: var(--r-3xl) var(--r-3xl) 0 0;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(100%);
+  transition: transform var(--dur-slow) var(--ease);
+}
+.drawer.open .drawer-content { transform: translateY(0); }
+
+@media (min-width: 640px) {
+  .drawer { align-items: center; padding: var(--s-6); }
+  .drawer-content {
+    height: min(88vh, 820px);
+    border-radius: var(--r-3xl);
+    transform: translateY(40px) scale(0.96);
+    opacity: 0;
+    transition: transform var(--dur-slow) var(--ease), opacity var(--dur) var(--ease);
+  }
+  .drawer.open .drawer-content { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.drawer-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--line-strong);
+  border-radius: var(--r-pill);
+  margin: var(--s-3) auto var(--s-2);
+  flex-shrink: 0;
+}
+@media (min-width: 640px) {
+  .drawer-handle { display: none; }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-3) var(--s-5) var(--s-2);
+  flex-shrink: 0;
+  gap: var(--s-3);
+}
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-2);
+  background: var(--surface-soft);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--bg-deep); color: var(--ink); }
+.icon-btn:active { transform: scale(0.92); }
+.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn.invisible { visibility: hidden; pointer-events: none; }
+
+/* Drawer brand */
+.drawer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.drawer-brand-mark {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-sm);
+  background: var(--brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.drawer-brand-mark::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.4px solid var(--accent);
+  border-top-color: transparent;
+  border-right-color: transparent;
+}
+
+/* Progress dots */
+.progress {
+  padding: var(--s-2) var(--s-5) var(--s-3);
+  flex-shrink: 0;
+}
+.progress-track {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+}
+.progress-step {
+  flex: 1;
+  height: 3px;
+  background: var(--line);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  position: relative;
+}
+.progress-step::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--brand);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform var(--dur) var(--ease);
+  border-radius: var(--r-pill);
+}
+.progress-step.complete::after { transform: scaleX(1); }
+.progress-step.current::after { transform: scaleX(1); background: var(--accent); }
+
+/* Drawer body holds steps */
+.drawer-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.step {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(24px);
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.step.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+.step.exit-left {
+  opacity: 0;
+  transform: translateX(-24px);
+}
+.step-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--s-2) var(--s-5) var(--s-4);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.step-scroll::-webkit-scrollbar { width: 6px; }
+.step-scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: var(--r-pill); }
+.step-footer {
+  padding: var(--s-4) var(--s-5) calc(var(--s-5) + env(safe-area-inset-bottom, 0));
+  background: linear-gradient(180deg, transparent 0%, var(--surface) 25%);
+  flex-shrink: 0;
+  border-top: 1px solid var(--line);
+}
+
+/* Step heading */
+.step-eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--s-2);
+}
+.step-title {
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  line-height: var(--lh-tight);
+  margin-bottom: var(--s-2);
+}
+.step-sub {
+  font-size: var(--fs-base);
+  color: var(--ink-2);
+  margin-bottom: var(--s-5);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   STEP 1 — AIRPORT DIRECTORY
+   ============================================================ */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: var(--s-3) var(--s-4);
+  margin-bottom: var(--s-5);
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.search-bar:focus-within {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: var(--ring-brand);
+}
+.search-bar svg { width: 18px; height: 18px; color: var(--ink-3); flex-shrink: 0; }
+.search-bar input {
+  flex: 1;
+  font-size: var(--fs-md);
+  color: var(--ink);
+  min-width: 0;
+}
+.search-bar input::placeholder { color: var(--ink-3); }
+
+.airport-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.airport {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  text-align: left;
+  width: 100%;
+}
+.airport:hover {
+  border-color: var(--brand);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+.airport:active { transform: translateY(0); }
+.airport-flag {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  background: var(--surface-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.airport-meta { flex: 1; min-width: 0; }
+.airport-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.airport-iata {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.airport-city {
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+}
+.airport-name {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.airport-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-3);
+  flex-shrink: 0;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.airport:hover .airport-arrow { color: var(--brand); background: var(--brand-tint); }
+.badge-live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid var(--success-line);
+  padding: 2px var(--s-2);
+  border-radius: var(--r-pill);
+  letter-spacing: 0.02em;
+}
+.badge-live::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.empty {
+  text-align: center;
+  padding: var(--s-8) var(--s-4);
+  color: var(--ink-3);
+  font-size: var(--fs-base);
+}
+
+/* ============================================================
+   STEP 2 — FLIGHT
+   ============================================================ */
+.field-label {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-bottom: var(--s-3);
+}
+.field-group { margin-bottom: var(--s-6); }
+
+.day-pills {
+  display: flex;
+  gap: var(--s-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(var(--s-5) * -1);
+  padding: var(--s-1) var(--s-5);
+}
+.day-pills::-webkit-scrollbar { display: none; }
+.day-pill {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: var(--s-3) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  transition: all var(--dur-fast) var(--ease);
+  gap: 2px;
+}
+.day-pill:hover { border-color: var(--brand); }
+.day-pill .dow {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.day-pill .day {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.day-pill .month {
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.day-pill.selected {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+.day-pill.selected .dow,
+.day-pill.selected .day,
+.day-pill.selected .month { color: var(--surface); }
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--s-2);
+}
+.stepper-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  background: var(--surface-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  transition: background var(--dur-fast) var(--ease), transform 120ms var(--ease);
+  font-size: 22px;
+  font-weight: 600;
+}
+.stepper-btn:hover { background: var(--bg-deep); }
+.stepper-btn:active { transform: scale(0.88); }
+.stepper-btn:disabled { color: var(--ink-4); cursor: not-allowed; }
+.stepper-value {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.stepper-value small { font-size: var(--fs-sm); font-weight: 400; color: var(--ink-3); }
+
+.text-input {
+  width: 100%;
+  padding: var(--s-4) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  font-size: var(--fs-md);
+  color: var(--ink);
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.text-input::placeholder { color: var(--ink-3); }
+.text-input:focus {
+  border-color: var(--brand);
+  box-shadow: var(--ring-brand);
+}
+
+/* ============================================================
+   STEP 3 — TIMESLOTS (the hero)
+   ============================================================ */
+.demand-legend {
+  display: flex;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  margin-bottom: var(--s-5);
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.legend-dot.q { background: var(--success); }
+.legend-dot.m { background: var(--warning); }
+.legend-dot.b { background: var(--danger); }
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-2);
+}
+.slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: var(--s-3) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  text-align: left;
+  min-height: 70px;
+}
+.slot:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.slot:active { transform: translateY(0); }
+.slot-time {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.slot-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.slot-meta .legend-dot { width: 6px; height: 6px; }
+.slot.q { background: var(--success-bg); border-color: var(--success-line); }
+.slot.q .slot-meta { color: var(--success); }
+.slot.m { background: var(--warning-bg); border-color: var(--warning-line); }
+.slot.m .slot-meta { color: var(--warning); }
+.slot.b { background: var(--danger-bg); border-color: var(--danger-line); }
+.slot.b .slot-meta { color: var(--danger); }
+
+.slot.selected {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint), var(--shadow-md);
+  background: var(--surface);
+  transform: translateY(-2px);
+}
+.slot.selected .slot-meta { color: var(--brand); }
+.slot.selected .slot-time { color: var(--brand); }
+
+.slot.recommended::before {
+  content: '★';
+  position: absolute;
+  top: -8px;
+  left: -6px;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  color: var(--surface);
+  border-radius: 50%;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  z-index: 1;
+}
+
+.recommendation-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  background: linear-gradient(135deg, var(--brand-tint) 0%, var(--accent-tint) 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  margin-bottom: var(--s-4);
+}
+.recommendation-banner-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-xs);
+}
+.recommendation-banner-icon svg { width: 18px; height: 18px; color: var(--accent); }
+.recommendation-banner-text { flex: 1; }
+.recommendation-banner h4 {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.recommendation-banner p {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   STEP 4 — DETAILS
+   ============================================================ */
+.details-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+.field {
+  display: flex;
+  flex-direction: column;
+}
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+
+.summary-card {
+  padding: var(--s-4);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  margin-bottom: var(--s-5);
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-sm);
+  padding: var(--s-2) 0;
+}
+.summary-row + .summary-row { border-top: 1px dashed var(--line-strong); }
+.summary-row dt { color: var(--ink-3); }
+.summary-row dd { font-weight: 600; color: var(--ink); margin: 0; font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   STEP 5 — BOARDING PASS
+   ============================================================ */
+.success-mark {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--success-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--s-3) auto var(--s-4);
+  position: relative;
+}
+.success-mark svg { width: 28px; height: 28px; color: var(--success); }
+.success-mark::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 2px solid var(--success-line);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ring 1.4s var(--ease-out) forwards;
+}
+@keyframes ring {
+  0% { opacity: 0; transform: scale(0.8); }
+  60% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+
+.confirmation-title {
+  text-align: center;
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: var(--s-1);
+}
+.confirmation-sub {
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  margin-bottom: var(--s-5);
+}
+
+.boarding-pass {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-2xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: var(--s-5);
+}
+.bp-top {
+  background: linear-gradient(135deg, var(--brand) 0%, #2A4180 100%);
+  color: var(--surface);
+  padding: var(--s-5) var(--s-5) var(--s-6);
+  position: relative;
+  overflow: hidden;
+}
+.bp-top::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 91, 54, 0.18), transparent 70%);
+  pointer-events: none;
+}
+.bp-brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--s-5);
+  position: relative;
+}
+.bp-brand-name {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.bp-pass-type {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  opacity: 0.7;
+}
+.bp-route {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  position: relative;
+}
+.bp-airport {
+  flex: 1;
+}
+.bp-iata {
+  font-size: var(--fs-4xl);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: var(--s-2);
+}
+.bp-airport-name {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+.bp-plane {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.bp-plane svg { width: 20px; height: 20px; transform: rotate(45deg); }
+
+.bp-perforation {
+  position: relative;
+  height: 20px;
+  background: var(--surface);
+}
+.bp-perforation::before,
+.bp-perforation::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  transform: translateY(-50%);
+}
+.bp-perforation::before { left: -10px; }
+.bp-perforation::after { right: -10px; }
+.bp-dash {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  right: 16px;
+  height: 1px;
+  background-image: linear-gradient(90deg, var(--line-strong) 50%, transparent 50%);
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+  transform: translateY(-50%);
+}
+
+.bp-mid {
+  padding: var(--s-5);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+.bp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bp-field-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.bp-field-value {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums;
+}
+.bp-field-value.lg {
+  font-size: var(--fs-xl);
+}
+
+.bp-bottom {
+  padding: var(--s-5);
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  border-top: 1px dashed var(--line-strong);
+}
+.qr-code {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(25, 1fr);
+  grid-template-rows: repeat(25, 1fr);
+  gap: 0;
+  border-radius: var(--r-sm);
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.qr-cell { background: var(--surface); }
+.qr-cell.on { background: var(--ink); }
+.bp-bottom-text { flex: 1; min-width: 0; }
+.bp-bottom-text h5 {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.bp-bottom-text p {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* Journey timeline */
+.journey {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: var(--s-4) var(--s-5);
+  margin-bottom: var(--s-5);
+}
+.journey h4 {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  font-weight: 600;
+  margin-bottom: var(--s-3);
+}
+.journey-timeline {
+  position: relative;
+  padding-left: var(--s-6);
+}
+.journey-timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--line);
+  border-radius: var(--r-pill);
+}
+.journey-stop {
+  position: relative;
+  padding-bottom: var(--s-4);
+}
+.journey-stop:last-child { padding-bottom: 0; }
+.journey-stop::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--s-6) * -1 + 3px);
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--ink-3);
+}
+.journey-stop.highlight::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+.journey-stop-time {
+  font-size: var(--fs-sm);
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.journey-stop-label {
+  font-size: var(--fs-base);
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.journey-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 1px var(--s-2);
+  border-radius: var(--r-pill);
+  border: 1px solid;
+}
+.journey-badge.q { color: var(--success); background: var(--success-bg); border-color: var(--success-line); }
+.journey-badge.m { color: var(--warning); background: var(--warning-bg); border-color: var(--warning-line); }
+.journey-badge.b { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-line); }
+.journey-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* ============================================================
+   FOOTER CTA AREA / SUMMARY ROW
+   ============================================================ */
+.footer-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-3);
+  font-size: var(--fs-sm);
+}
+.footer-summary-label { color: var(--ink-3); }
+.footer-summary-value { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* Disabled state */
+.btn[disabled], .btn[aria-disabled="true"] {
+  background: var(--bg-deep);
+  color: var(--ink-3);
+  cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Utility */
+.center { text-align: center; }
+.muted { color: var(--ink-3); }
+.spacer { height: var(--s-4); }
+.divider { height: 1px; background: var(--line); margin: var(--s-5) 0; }
+
+@media (min-width: 640px) {
+  .hero-stats { gap: var(--s-12); }
+}
+
+@media (max-width: 380px) {
+  .slots-grid { grid-template-columns: repeat(2, 1fr); }
+  .bp-iata { font-size: 2.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     PAGE
+     ============================================================ -->
+<main class="page">
+  <header class="page-header">
+    <div class="logo">
+      <span class="logo-mark"></span>
+      TimeSlotPro
+    </div>
+    <div class="demo-badge">Demo</div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="pulse"></span>
+      Live at 38 airports across Europe
+    </div>
+    <h1>Skip the security queue.<br><em>Book your slot.</em></h1>
+    <p>Pre-book your security timeslot in seconds. Choose a free off-peak time, or upgrade to fly through at your preferred hour.</p>
+    <div class="hero-cta-row">
+      <button class="btn btn-accent btn-lg" id="openDrawerBtn">Find your timeslot</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <strong>2.4M+</strong>
+        <span>Slots booked</span>
+      </div>
+      <div class="hero-stat">
+        <strong>12 min</strong>
+        <span>Avg. saved</span>
+      </div>
+      <div class="hero-stat">
+        <strong>4.8★</strong>
+        <span>Rating</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    © TimeSlotPro · Demand-shaping for airport security
+  </footer>
+</main>
+
+<!-- ============================================================
+     DRAWER
+     ============================================================ -->
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Book a security timeslot">
+  <div class="drawer-backdrop" data-close></div>
+
+  <div class="drawer-content" id="drawerContent">
+    <div class="drawer-handle"></div>
+
+    <header class="drawer-header">
+      <button class="icon-btn" id="backBtn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+
+      <div class="drawer-brand">
+        <span class="drawer-brand-mark"></span>
+        TimeSlotPro
+      </div>
+
+      <button class="icon-btn" data-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+
+    <div class="progress">
+      <div class="progress-track" id="progressTrack">
+        <div class="progress-step current"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+        <div class="progress-step"></div>
+      </div>
+    </div>
+
+    <div class="drawer-body">
+
+      <!-- ===== STEP 1 — Airport ===== -->
+      <section class="step active" data-step="1">
+        <div class="step-scroll">
+          <div class="step-eyebrow">Step 1 of 5</div>
+          <h2 class="step-title">Choose your airport</h2>
+          <p class="step-sub">Pick from 38 airports across Europe. More added every month.</p>
+
+          <label class="search-bar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search by city, name or IATA code" id="airportSearch" autocomplete="off">
+          </label>
+
+          <ul class="airport-list" id="airportList"></ul>
+        </div>
+      </section>
+
+      <!-- ===== STEP 2 — Flight ===== -->
+      <section class="step" data-step="2">
+        <div class="step-scroll">
+          <div class="step-eyebrow">Step 2 of 5</div>
+          <h2 class="step-title">Your flight</h2>
+          <p class="step-sub">Tell us when you're flying and how many travellers.</p>
+
+          <div class="field-group">
+            <label class="field-label">Departure date</label>
+            <div class="day-pills" id="dayPills"></div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Passengers</label>
+            <div class="stepper">
+              <button class="stepper-btn" id="paxMinus" aria-label="Decrease passengers">−</button>
+              <div class="stepper-value"><span id="paxValue">1</span> <small id="paxLabel">passenger</small></div>
+              <button class="stepper-btn" id="paxPlus" aria-label="Increase passengers">+</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="flightNo">Flight number <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400;">(optional)</span></label>
+            <input type="text" class="text-input" id="flightNo" placeholder="e.g. KL1071" autocomplete="off">
+          </div>
+        </div>
+        <div class="step-footer">
+          <button class="btn btn-primary btn-block" id="step2Next">Find timeslots</button>
+        </div>
+      </section>
+
+      <!-- ===== STEP 3 — Timeslots ===== -->
+      <section class="step" data-step="3">
+        <div class="step-scroll">
+          <div class="step-eyebrow">Step 3 of 5</div>
+          <h2 class="step-title">Choose your timeslot</h2>
+          <p class="step-sub" id="step3Sub">Pick a 15-minute window to clear security.</p>
+
+          <div class="recommendation-banner">
+            <div class="recommendation-banner-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <div class="recommendation-banner-text">
+              <h4>Recommended for your flight</h4>
+              <p>09:00 has the shortest queues. We've pre-selected it for you.</p>
+            </div>
+          </div>
+
+          <div class="demand-legend">
+            <span class="legend-item"><span class="legend-dot q"></span>Quiet</span>
+            <span class="legend-item"><span class="legend-dot m"></span>Moderate</span>
+            <span class="legend-item"><span class="legend-dot b"></span>Busy</span>
+          </div>
+
+          <div class="slots-grid" id="slotsGrid"></div>
+        </div>
+        <div class="step-footer">
+          <div class="footer-summary">
+            <span class="footer-summary-label">Selected</span>
+            <span class="footer-summary-value" id="step3Selected">—</span>
+          </div>
+          <button class="btn btn-primary btn-block" id="step3Next">Continue</button>
+        </div>
+      </section>
+
+      <!-- ===== STEP 4 — Details ===== -->
+      <section class="step" data-step="4">
+        <div class="step-scroll">
+          <div class="step-eyebrow">Step 4 of 5</div>
+          <h2 class="step-title">Your details</h2>
+          <p class="step-sub">We'll send your timeslot pass to your email.</p>
+
+          <dl class="summary-card" id="summaryCard"></dl>
+
+          <div class="details-form">
+            <div class="field">
+              <label class="field-label" for="emailInput">Email</label>
+              <input type="email" class="text-input" id="emailInput" placeholder="you@example.com" autocomplete="email">
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="firstNameInput">First name</label>
+                <input type="text" class="text-input" id="firstNameInput" placeholder="Alex" autocomplete="given-name">
+              </div>
+              <div class="field">
+                <label class="field-label" for="lastNameInput">Last name</label>
+                <input type="text" class="text-input" id="lastNameInput" placeholder="Morgan" autocomplete="family-name">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-footer">
+          <button class="btn btn-accent btn-block" id="step4Next">Confirm booking</button>
+        </div>
+      </section>
+
+      <!-- ===== STEP 5 — Confirmation / Boarding pass ===== -->
+      <section class="step" data-step="5">
+        <div class="step-scroll">
+          <div class="success-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <h2 class="confirmation-title">You're all set</h2>
+          <p class="confirmation-sub" id="confirmationSub">A confirmation has been sent to your email.</p>
+
+          <div class="boarding-pass">
+            <div class="bp-top">
+              <div class="bp-brand">
+                <span class="bp-brand-name">TimeSlotPro</span>
+                <span class="bp-pass-type">Security Pass</span>
+              </div>
+              <div class="bp-route">
+                <div class="bp-airport">
+                  <div class="bp-iata" id="bpIata">AMS</div>
+                  <div class="bp-airport-name" id="bpName">Schiphol · Amsterdam</div>
+                </div>
+                <div class="bp-plane">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="bp-perforation"><div class="bp-dash"></div></div>
+
+            <div class="bp-mid">
+              <div class="bp-field">
+                <span class="bp-field-label">Security slot</span>
+                <span class="bp-field-value lg tnum" id="bpSlot">09:00 — 09:15</span>
+              </div>
+              <div class="bp-field">
+                <span class="bp-field-label">Date</span>
+                <span class="bp-field-value tnum" id="bpDate">Sat 11 Apr</span>
+              </div>
+              <div class="bp-field">
+                <span class="bp-field-label">Passenger</span>
+                <span class="bp-field-value" id="bpName2">Alex Morgan</span>
+              </div>
+              <div class="bp-field">
+                <span class="bp-field-label">Travellers</span>
+                <span class="bp-field-value tnum" id="bpPax">1</span>
+              </div>
+              <div class="bp-field">
+                <span class="bp-field-label">Flight</span>
+                <span class="bp-field-value tnum" id="bpFlight">KL1071</span>
+              </div>
+              <div class="bp-field">
+                <span class="bp-field-label">Reference</span>
+                <span class="bp-field-value tnum" id="bpRef">TSP-8KQ2</span>
+              </div>
+            </div>
+
+            <div class="bp-bottom">
+              <div class="qr-code" id="qrCode"></div>
+              <div class="bp-bottom-text">
+                <h5>Show at security</h5>
+                <p>Scan this pass at the dedicated TimeSlotPro lane.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="journey">
+            <h4>Your journey</h4>
+            <div class="journey-timeline">
+              <div class="journey-stop">
+                <div class="journey-stop-time tnum" id="jArrive">08:30</div>
+                <div class="journey-stop-label" id="jArriveLabel">Arrive at airport</div>
+              </div>
+              <div class="journey-stop highlight">
+                <div class="journey-stop-time tnum" id="jSlot">09:00 — 09:15</div>
+                <div class="journey-stop-label">Security timeslot <span class="journey-badge q" id="jBadge">Quiet</span></div>
+              </div>
+              <div class="journey-stop">
+                <div class="journey-stop-time tnum" id="jDepart">10:35</div>
+                <div class="journey-stop-label">Boarding · Gate D17</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="step-footer">
+          <button class="btn btn-primary btn-block" id="step5Done">Done</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const AIRPORTS = [
+  { iata: 'LHR', name: 'Heathrow',                 city: 'London',     country: 'United Kingdom', flag: '🇬🇧', integrated: true  },
+  { iata: 'AMS', name: 'Schiphol',                 city: 'Amsterdam',  country: 'Netherlands',    flag: '🇳🇱', integrated: true  },
+  { iata: 'FRA', name: 'Frankfurt',                city: 'Frankfurt',  country: 'Germany',        flag: '🇩🇪', integrated: true  },
+  { iata: 'CDG', name: 'Charles de Gaulle',        city: 'Paris',      country: 'France',         flag: '🇫🇷', integrated: true  },
+  { iata: 'MAD', name: 'Adolfo Suárez Madrid–Barajas', city: 'Madrid', country: 'Spain',          flag: '🇪🇸', integrated: true  },
+  { iata: 'BCN', name: 'Josep Tarradellas El Prat',city: 'Barcelona',  country: 'Spain',          flag: '🇪🇸', integrated: false },
+  { iata: 'LIS', name: 'Humberto Delgado',         city: 'Lisbon',     country: 'Portugal',       flag: '🇵🇹', integrated: false },
+  { iata: 'FCO', name: 'Leonardo da Vinci–Fiumicino', city: 'Rome',    country: 'Italy',          flag: '🇮🇹', integrated: true  },
+  { iata: 'DUB', name: 'Dublin',                   city: 'Dublin',     country: 'Ireland',        flag: '🇮🇪', integrated: false },
+  { iata: 'ZRH', name: 'Zürich',                   city: 'Zurich',     country: 'Switzerland',    flag: '🇨🇭', integrated: true  },
+  { iata: 'BRS', name: 'Bristol',                  city: 'Bristol',    country: 'United Kingdom', flag: '🇬🇧', integrated: false },
+  { iata: 'EIN', name: 'Eindhoven',                city: 'Eindhoven',  country: 'Netherlands',    flag: '🇳🇱', integrated: false },
+  { iata: 'FAO', name: 'Faro',                     city: 'Faro',       country: 'Portugal',       flag: '🇵🇹', integrated: false },
+  { iata: 'OPO', name: 'Francisco Sá Carneiro',    city: 'Porto',      country: 'Portugal',       flag: '🇵🇹', integrated: false },
+  { iata: 'CWL', name: 'Cardiff',                  city: 'Cardiff',    country: 'United Kingdom', flag: '🇬🇧', integrated: false },
+];
+
+// Build 04:00 → 12:00 in 15-min slots, with demand levels and prices
+function buildSlots() {
+  const slots = [];
+  const start = 4 * 60;   // minutes from midnight
+  const end   = 12 * 60;
+  for (let m = start; m < end; m += 15) {
+    const h = Math.floor(m / 60);
+    const mm = m % 60;
+    const h2 = Math.floor((m + 15) / 60);
+    const mm2 = (m + 15) % 60;
+    const time = `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+    const timeEnd = `${String(h2).padStart(2, '0')}:${String(mm2).padStart(2, '0')}`;
+    let level;
+    if (m < 5 * 60 + 30) level = 'q';
+    else if (m < 6 * 60) level = 'm';
+    else if (m < 8 * 60) level = 'b';
+    else if (m < 9 * 60) level = 'm';
+    else if (m < 11 * 60) level = 'q';
+    else if (m < 11 * 60 + 30) level = 'm';
+    else level = 'q';
+    slots.push({ time, timeEnd, level, id: time });
+  }
+  return slots;
+}
+const SLOTS = buildSlots();
+const RECOMMENDED_ID = '09:00';
+const DEMAND_LABEL = { q: 'Quiet', m: 'Moderate', b: 'Busy' };
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  step: 1,
+  airport: null,
+  date: null,
+  passengers: 1,
+  flight: '',
+  slot: null,
+  email: '',
+  firstName: '',
+  lastName: '',
+};
+
+/* ============================================================
+   ELEMENTS
+   ============================================================ */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+const drawer       = $('#drawer');
+const openBtn      = $('#openDrawerBtn');
+const backBtn      = $('#backBtn');
+const progressTrack= $('#progressTrack');
+const steps        = $$('.step');
+
+/* ============================================================
+   DRAWER OPEN / CLOSE
+   ============================================================ */
+function openDrawer() {
+  drawer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  drawer.classList.remove('open');
+  document.body.style.overflow = '';
+}
+openBtn.addEventListener('click', openDrawer);
+$$('[data-close]').forEach(el => el.addEventListener('click', closeDrawer));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+});
+
+/* ============================================================
+   STEP NAVIGATION
+   ============================================================ */
+function goToStep(n) {
+  if (n < 1 || n > 5) return;
+  const current = steps.find(s => s.classList.contains('active'));
+  const target  = steps.find(s => +s.dataset.step === n);
+  if (!target || target === current) return;
+
+  const goingForward = n > +current.dataset.step;
+
+  current.classList.remove('active');
+  if (goingForward) current.classList.add('exit-left');
+
+  setTimeout(() => {
+    current.classList.remove('exit-left');
+    current.style.transform = '';
+  }, 350);
+
+  target.style.transition = 'none';
+  target.style.transform = goingForward ? 'translateX(24px)' : 'translateX(-24px)';
+  void target.offsetWidth;
+  target.style.transition = '';
+  target.classList.add('active');
+  target.style.transform = '';
+
+  state.step = n;
+  updateProgress();
+  updateBackBtn();
+  const scroll = target.querySelector('.step-scroll');
+  if (scroll) scroll.scrollTop = 0;
+}
+
+function updateProgress() {
+  $$('.progress-step', progressTrack).forEach((el, i) => {
+    el.classList.remove('current', 'complete');
+    if (i + 1 < state.step) el.classList.add('complete');
+    else if (i + 1 === state.step) el.classList.add('current');
+  });
+}
+
+function updateBackBtn() {
+  if (state.step === 1 || state.step === 5) {
+    backBtn.classList.add('invisible');
+  } else {
+    backBtn.classList.remove('invisible');
+  }
+}
+
+backBtn.addEventListener('click', () => goToStep(state.step - 1));
+
+/* ============================================================
+   STEP 1 — Airports
+   ============================================================ */
+const airportListEl = $('#airportList');
+const searchEl = $('#airportSearch');
+
+function renderAirports(filter = '') {
+  const f = filter.trim().toLowerCase();
+  const list = AIRPORTS.filter(a =>
+    !f ||
+    a.iata.toLowerCase().includes(f) ||
+    a.city.toLowerCase().includes(f) ||
+    a.name.toLowerCase().includes(f) ||
+    a.country.toLowerCase().includes(f)
+  );
+  airportListEl.innerHTML = list.length ? list.map(a => `
+    <li>
+      <button class="airport" data-iata="${a.iata}">
+        <span class="airport-flag">${a.flag}</span>
+        <span class="airport-meta">
+          <span class="airport-row">
+            <span class="airport-iata">${a.iata}</span>
+            <span class="airport-city">${a.city}</span>
+            ${a.integrated ? '<span class="badge-live">Live</span>' : ''}
+          </span>
+          <span class="airport-name">${a.name}</span>
+        </span>
+        <span class="airport-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </button>
+    </li>
+  `).join('') : '<li class="empty">No airports match your search.</li>';
+
+  $$('.airport', airportListEl).forEach(btn => {
+    btn.addEventListener('click', () => {
+      const iata = btn.dataset.iata;
+      state.airport = AIRPORTS.find(a => a.iata === iata);
+      goToStep(2);
+    });
+  });
+}
+searchEl.addEventListener('input', e => renderAirports(e.target.value));
+renderAirports();
+
+/* ============================================================
+   STEP 2 — Flight
+   ============================================================ */
+const dayPillsEl = $('#dayPills');
+function renderDayPills() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() + i);
+    days.push(d);
+  }
+  const dows   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Default selection: tomorrow
+  if (!state.date) state.date = days[1];
+
+  dayPillsEl.innerHTML = days.map((d, i) => `
+    <button class="day-pill ${sameDay(d, state.date) ? 'selected' : ''}" data-idx="${i}">
+      <span class="dow">${i === 0 ? 'Today' : dows[d.getDay()]}</span>
+      <span class="day">${d.getDate()}</span>
+      <span class="month">${months[d.getMonth()]}</span>
+    </button>
+  `).join('');
+
+  $$('.day-pill', dayPillsEl).forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.date = days[+btn.dataset.idx];
+      $$('.day-pill', dayPillsEl).forEach(p => p.classList.toggle('selected', p === btn));
+    });
+  });
+}
+function sameDay(a, b) {
+  return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+const paxValueEl = $('#paxValue');
+const paxLabelEl = $('#paxLabel');
+const paxPlus  = $('#paxPlus');
+const paxMinus = $('#paxMinus');
+function updatePax() {
+  paxValueEl.textContent = state.passengers;
+  paxLabelEl.textContent = state.passengers === 1 ? 'passenger' : 'passengers';
+  paxMinus.disabled = state.passengers <= 1;
+  paxPlus.disabled  = state.passengers >= 6;
+}
+paxPlus.addEventListener('click',  () => { if (state.passengers < 6) { state.passengers++; updatePax(); } });
+paxMinus.addEventListener('click', () => { if (state.passengers > 1) { state.passengers--; updatePax(); } });
+
+$('#flightNo').addEventListener('input', e => state.flight = e.target.value);
+
+$('#step2Next').addEventListener('click', () => {
+  renderSlots();
+  goToStep(3);
+});
+
+renderDayPills();
+updatePax();
+
+/* ============================================================
+   STEP 3 — Slots
+   ============================================================ */
+const slotsGridEl = $('#slotsGrid');
+const step3Selected = $('#step3Selected');
+
+function renderSlots() {
+  if (!state.slot) state.slot = SLOTS.find(s => s.id === RECOMMENDED_ID);
+  slotsGridEl.innerHTML = SLOTS.map(s => {
+    const isRecommended = s.id === RECOMMENDED_ID;
+    const isSelected = state.slot && state.slot.id === s.id;
+    return `
+      <button class="slot ${s.level} ${isSelected ? 'selected' : ''} ${isRecommended ? 'recommended' : ''}" data-id="${s.id}">
+        <span class="slot-time">${s.time}</span>
+        <span class="slot-meta"><span class="legend-dot ${s.level}"></span>${DEMAND_LABEL[s.level]}</span>
+      </button>
+    `;
+  }).join('');
+  $$('.slot', slotsGridEl).forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.slot = SLOTS.find(s => s.id === btn.dataset.id);
+      $$('.slot', slotsGridEl).forEach(s => s.classList.toggle('selected', s === btn));
+      updateStep3Footer();
+    });
+  });
+  updateStep3Footer();
+}
+function updateStep3Footer() {
+  if (!state.slot) {
+    step3Selected.textContent = '—';
+    return;
+  }
+  step3Selected.textContent = `${state.slot.time} – ${state.slot.timeEnd}`;
+}
+$('#step3Next').addEventListener('click', () => {
+  renderSummary();
+  goToStep(4);
+});
+
+/* ============================================================
+   STEP 4 — Details
+   ============================================================ */
+function renderSummary() {
+  const card = $('#summaryCard');
+  if (!state.airport || !state.slot || !state.date) return;
+  card.innerHTML = `
+    <div class="summary-row"><dt>Airport</dt><dd>${state.airport.iata} · ${state.airport.city}</dd></div>
+    <div class="summary-row"><dt>Date</dt><dd>${formatDate(state.date)}</dd></div>
+    <div class="summary-row"><dt>Time</dt><dd>${state.slot.time} – ${state.slot.timeEnd}</dd></div>
+    <div class="summary-row"><dt>Travellers</dt><dd>${state.passengers}</dd></div>
+  `;
+}
+$('#emailInput').addEventListener('input',     e => state.email     = e.target.value);
+$('#firstNameInput').addEventListener('input', e => state.firstName = e.target.value);
+$('#lastNameInput').addEventListener('input',  e => state.lastName  = e.target.value);
+
+$('#step4Next').addEventListener('click', () => {
+  updateConfirmation();
+  goToStep(5);
+});
+
+/* ============================================================
+   STEP 5 — Confirmation / boarding pass
+   ============================================================ */
+function updateConfirmation() {
+  if (!state.airport || !state.slot || !state.date) return;
+  $('#bpIata').textContent = state.airport.iata;
+  $('#bpName').textContent = `${state.airport.name} · ${state.airport.city}`;
+  $('#bpSlot').textContent = `${state.slot.time} — ${state.slot.timeEnd}`;
+  $('#bpDate').textContent = formatDate(state.date, true);
+  $('#bpPax').textContent  = state.passengers;
+  $('#bpFlight').textContent = state.flight || 'KL1071';
+  $('#bpRef').textContent  = generateRef();
+
+  const fullName = ((state.firstName || 'Alex') + ' ' + (state.lastName || 'Morgan')).trim();
+  $('#bpName2').textContent = fullName;
+  $('#confirmationSub').textContent = state.email
+    ? `A confirmation has been sent to ${state.email}.`
+    : 'A confirmation has been sent to your email.';
+
+  // Journey times: arrive 30 min before slot, depart 95 min after slot start
+  const slotMin = parseTime(state.slot.time);
+  $('#jArrive').textContent = formatMinutes(slotMin - 30);
+  $('#jSlot').textContent   = `${state.slot.time} — ${state.slot.timeEnd}`;
+  $('#jDepart').textContent = formatMinutes(slotMin + 95);
+  $('#jArriveLabel').textContent = `Arrive at ${state.airport.city}`;
+
+  const badge = $('#jBadge');
+  badge.className = 'journey-badge ' + state.slot.level;
+  badge.textContent = DEMAND_LABEL[state.slot.level];
+
+  renderQR();
+}
+
+function formatDate(d, withYear = false) {
+  if (!d) return '';
+  const dows = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${dows[d.getDay()]} ${d.getDate()} ${mons[d.getMonth()]}`;
+}
+function parseTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+function formatMinutes(min) {
+  while (min < 0) min += 24 * 60;
+  const h = Math.floor(min / 60) % 24;
+  const m = min % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+function generateRef() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = 'TSP-';
+  for (let i = 0; i < 4; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+/* QR placeholder — 25x25 grid with finder squares + deterministic noise */
+function renderQR() {
+  const size = 25;
+  const cells = new Array(size * size).fill(0);
+
+  // Finder pattern helper (7x7)
+  function finder(ox, oy) {
+    for (let y = 0; y < 7; y++) {
+      for (let x = 0; x < 7; x++) {
+        const isBorder = x === 0 || x === 6 || y === 0 || y === 6;
+        const isCenter = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+        if (isBorder || isCenter) cells[(oy + y) * size + (ox + x)] = 1;
+      }
+    }
+  }
+  finder(0, 0);
+  finder(size - 7, 0);
+  finder(0, size - 7);
+
+  // Timing patterns
+  for (let i = 8; i < size - 8; i++) {
+    cells[6 * size + i] = i % 2 === 0 ? 1 : 0;
+    cells[i * size + 6] = i % 2 === 0 ? 1 : 0;
+  }
+
+  // Pseudo-random data with seed for stable look
+  let seed = 137;
+  function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const inFinder =
+        (x < 8 && y < 8) ||
+        (x >= size - 8 && y < 8) ||
+        (x < 8 && y >= size - 8);
+      if (inFinder) continue;
+      if (x === 6 || y === 6) continue;
+      if (rnd() > 0.55) cells[y * size + x] = 1;
+    }
+  }
+
+  const qrEl = $('#qrCode');
+  qrEl.innerHTML = cells.map(c => `<div class="qr-cell ${c ? 'on' : ''}"></div>`).join('');
+}
+
+$('#step5Done').addEventListener('click', () => {
+  closeDrawer();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+updateProgress();
+updateBackBtn();
+
+// Auto-open drawer on first load so the demo is immediately visible
+window.addEventListener('load', () => {
+  setTimeout(openDrawer, 250);
+});
+</script>
+</body>
+</html>
