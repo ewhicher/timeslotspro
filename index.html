@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="theme-color" content="#1A2B4F">
+<meta name="theme-color" content="#0B1530">
 <title>TimeSlotPro — Skip the security queue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,50 +13,51 @@
    DESIGN TOKENS — single source of truth
    ============================================================ */
 :root {
-  /* Colour */
-  --bg: #F4F2EC;
-  --bg-deep: #EDEAE0;
+  /* Colour — cool, enterprise */
+  --bg: #F6F8FB;
+  --bg-deep: #EEF1F7;
   --surface: #FFFFFF;
-  --surface-soft: #F8F6F0;
-  --line: #E6E2D5;
-  --line-strong: #D9D4C3;
+  --surface-soft: #F4F6FA;
+  --line: #E3E7EF;
+  --line-strong: #CBD2DE;
 
-  --ink: #0F1729;
-  --ink-2: #4D5566;
-  --ink-3: #8B92A3;
-  --ink-4: #B6BAC4;
+  --ink: #0A1428;
+  --ink-2: #475569;
+  --ink-3: #94A3B8;
+  --ink-4: #CBD5E1;
 
-  --brand: #1A2B4F;
-  --brand-deep: #0E1B36;
-  --brand-tint: #EEF0F6;
+  --brand: #0B1530;
+  --brand-2: #1C2A52;
+  --brand-deep: #050B1C;
+  --brand-tint: #EAEDF5;
 
-  --accent: #FF5B36;
-  --accent-deep: #E54720;
-  --accent-tint: #FFEDE6;
+  --accent: #0F766E;
+  --accent-deep: #0B5E57;
+  --accent-tint: #E5F1F0;
 
-  --success: #1F7A4D;
-  --success-bg: #E5F1EA;
-  --success-line: #C8E2D2;
+  --success: #047857;
+  --success-bg: #E8F4EE;
+  --success-line: #C5E2D2;
 
-  --warning: #B36900;
-  --warning-bg: #FBF1DA;
-  --warning-line: #F0DDA8;
+  --warning: #B45309;
+  --warning-bg: #FAF0DA;
+  --warning-line: #EFDCA8;
 
-  --danger: #A82E1A;
-  --danger-bg: #FBE6E0;
-  --danger-line: #F1C8BC;
+  --danger: #B91C1C;
+  --danger-bg: #FBE6E2;
+  --danger-line: #F1C8C0;
 
   /* Type scale */
   --font: 'Instrument Sans', -apple-system, system-ui, sans-serif;
-  --fs-xs: 0.6875rem;   /* 11 */
-  --fs-sm: 0.75rem;     /* 12 */
-  --fs-base: 0.875rem;  /* 14 */
-  --fs-md: 0.9375rem;   /* 15 */
-  --fs-lg: 1.0625rem;   /* 17 */
-  --fs-xl: 1.25rem;     /* 20 */
-  --fs-2xl: 1.625rem;   /* 26 */
-  --fs-3xl: 2.125rem;   /* 34 */
-  --fs-4xl: 2.875rem;   /* 46 */
+  --fs-xs: 0.6875rem;
+  --fs-sm: 0.75rem;
+  --fs-base: 0.875rem;
+  --fs-md: 0.9375rem;
+  --fs-lg: 1.0625rem;
+  --fs-xl: 1.25rem;
+  --fs-2xl: 1.625rem;
+  --fs-3xl: 2.125rem;
+  --fs-4xl: 2.875rem;
   --lh-tight: 1.1;
   --lh-snug: 1.3;
   --lh-base: 1.5;
@@ -74,23 +75,23 @@
   --s-12: 3rem;
   --s-16: 4rem;
 
-  /* Radius */
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 16px;
-  --r-xl: 20px;
-  --r-2xl: 24px;
-  --r-3xl: 32px;
+  /* Radius — tightened for enterprise */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 10px;
+  --r-2xl: 12px;
+  --r-3xl: 16px;
   --r-pill: 999px;
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(15, 23, 41, 0.04);
-  --shadow-sm: 0 1px 3px rgba(15, 23, 41, 0.06), 0 1px 2px rgba(15, 23, 41, 0.04);
-  --shadow-md: 0 4px 14px rgba(15, 23, 41, 0.07), 0 2px 4px rgba(15, 23, 41, 0.04);
-  --shadow-lg: 0 12px 32px rgba(15, 23, 41, 0.10), 0 4px 12px rgba(15, 23, 41, 0.05);
-  --shadow-xl: 0 24px 64px rgba(15, 23, 41, 0.14), 0 8px 24px rgba(15, 23, 41, 0.06);
-  --ring-focus: 0 0 0 3px rgba(255, 91, 54, 0.2);
-  --ring-brand: 0 0 0 3px rgba(26, 43, 79, 0.15);
+  /* Shadows — slate-tinted */
+  --shadow-xs: 0 1px 2px rgba(10, 20, 40, 0.04);
+  --shadow-sm: 0 1px 3px rgba(10, 20, 40, 0.06), 0 1px 2px rgba(10, 20, 40, 0.04);
+  --shadow-md: 0 4px 14px rgba(10, 20, 40, 0.07), 0 2px 4px rgba(10, 20, 40, 0.04);
+  --shadow-lg: 0 12px 32px rgba(10, 20, 40, 0.10), 0 4px 12px rgba(10, 20, 40, 0.05);
+  --shadow-xl: 0 24px 64px rgba(10, 20, 40, 0.14), 0 8px 24px rgba(10, 20, 40, 0.06);
+  --ring-focus: 0 0 0 3px rgba(15, 118, 110, 0.22);
+  --ring-brand: 0 0 0 3px rgba(11, 21, 48, 0.15);
 
   /* Motion */
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
@@ -139,10 +140,19 @@ ul { margin: 0; padding: 0; list-style: none; }
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(26, 43, 79, 0.08), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255, 91, 54, 0.06), transparent 60%),
-    var(--bg);
+  background: var(--bg);
+  isolation: isolate;
+}
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(11, 21, 48, 0.07) 1px, transparent 0);
+  background-size: 28px 28px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
+          mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
+  pointer-events: none;
+  z-index: -1;
 }
 .page-header {
   display: flex;
@@ -373,12 +383,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   align-items: flex-end;
   justify-content: center;
   pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-slow);
 }
-.drawer.open { pointer-events: auto; }
+.drawer.open {
+  pointer-events: auto;
+  visibility: visible;
+  transition-delay: 0s;
+}
 .drawer-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(15, 23, 41, 0.32);
+  background: rgba(10, 20, 40, 0.42);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   opacity: 0;
@@ -1051,7 +1067,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   margin-bottom: var(--s-5);
 }
 .bp-top {
-  background: linear-gradient(135deg, var(--brand) 0%, #2A4180 100%);
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
   color: var(--surface);
   padding: var(--s-5) var(--s-5) var(--s-6);
   position: relative;
@@ -1065,7 +1081,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 91, 54, 0.18), transparent 70%);
+  background: radial-gradient(circle, rgba(15, 118, 110, 0.28), transparent 70%);
   pointer-events: none;
 }
 .bp-brand {
@@ -1356,31 +1372,31 @@ ul { margin: 0; padding: 0; list-style: none; }
   <section class="hero">
     <div class="hero-eyebrow">
       <span class="pulse"></span>
-      Live at 38 airports across Europe
+      Live at 38 European airports
     </div>
-    <h1>Skip the security queue.<br><em>Book your slot.</em></h1>
-    <p>Pre-book your security timeslot in seconds. Choose a free off-peak time, or upgrade to fly through at your preferred hour.</p>
+    <h1>Move more passengers,<br><em>same lanes</em>.</h1>
+    <p>TimeSlotPro is the demand-shaping booking layer for airport security. We integrate with your existing systems and drive passenger uptake from day one — no infrastructure build required.</p>
     <div class="hero-cta-row">
-      <button class="btn btn-accent btn-lg" id="openDrawerBtn">Find your timeslot</button>
+      <button class="btn btn-primary btn-lg" id="openDrawerBtn" onclick="openDrawer()" type="button">Preview the passenger experience</button>
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
-        <strong>2.4M+</strong>
-        <span>Slots booked</span>
+        <strong>+24%</strong>
+        <span>Peak throughput</span>
       </div>
       <div class="hero-stat">
-        <strong>12 min</strong>
-        <span>Avg. saved</span>
+        <strong>14 days</strong>
+        <span>Avg. integration</span>
       </div>
       <div class="hero-stat">
-        <strong>4.8★</strong>
-        <span>Rating</span>
+        <strong>4.8 ★</strong>
+        <span>Passenger rating</span>
       </div>
     </div>
   </section>
 
   <footer class="page-footer">
-    © TimeSlotPro · Demand-shaping for airport security
+    © TimeSlotPro · Enterprise infrastructure for airport security · SOC 2 Type II
   </footer>
 </main>
 
