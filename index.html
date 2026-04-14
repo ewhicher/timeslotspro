@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
 <meta name="theme-color" content="#0B1530">
-<title>TimeSlotPro — Skip the security queue</title>
+<title>TimeSlotsPro — Skip the security queue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -941,17 +941,71 @@ ul { margin: 0; padding: 0; list-style: none; }
   z-index: 1;
 }
 
-.recommendation-banner {
+.busy-banner {
   display: flex;
   align-items: flex-start;
   gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--line));
+  border-radius: var(--r-lg);
+  margin-bottom: var(--s-4);
+}
+.busy-banner-icon {
+  width: 32px; height: 32px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-xs);
+}
+.busy-banner-icon svg { width: 16px; height: 16px; color: var(--danger); }
+.busy-banner-text h4 {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.busy-banner-text p {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  line-height: 1.45;
+}
+.busy-banner-text strong { color: var(--ink); font-weight: 600; }
+.slots-footnote {
+  margin-top: var(--s-4);
+  font-size: var(--fs-xs);
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.flight-info-banner {
   padding: var(--s-4);
   background: linear-gradient(135deg, var(--brand-tint) 0%, var(--accent-tint) 100%);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   margin-bottom: var(--s-4);
 }
-.recommendation-banner-icon {
+.flight-info-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.flight-info-col { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.flight-info-col.right { align-items: flex-end; }
+.flight-info-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.flight-info-value {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--ink);
+}
+.flight-info-plane {
   width: 36px;
   height: 36px;
   border-radius: var(--r-md);
@@ -962,19 +1016,19 @@ ul { margin: 0; padding: 0; list-style: none; }
   flex-shrink: 0;
   box-shadow: var(--shadow-xs);
 }
-.recommendation-banner-icon svg { width: 18px; height: 18px; color: var(--accent); }
-.recommendation-banner-text { flex: 1; }
-.recommendation-banner h4 {
-  font-size: var(--fs-base);
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 2px;
-}
-.recommendation-banner p {
+.flight-info-plane svg { width: 18px; height: 18px; color: var(--brand); }
+.flight-info-countdown {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
   font-size: var(--fs-sm);
   color: var(--ink-2);
-  line-height: 1.4;
 }
+.flight-info-countdown svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+.flight-info-countdown strong { color: var(--ink); font-weight: 600; }
 
 /* ============================================================
    STEP 4 — DETAILS
@@ -993,6 +1047,40 @@ ul { margin: 0; padding: 0; list-style: none; }
   grid-template-columns: 1fr 1fr;
   gap: var(--s-3);
 }
+.form-note {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  line-height: 1.45;
+  margin-top: calc(-1 * var(--s-2));
+}
+.privacy-note {
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+  line-height: 1.5;
+  margin-top: var(--s-4);
+}
+.inline-link {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.inline-link:hover { color: var(--brand-strong, var(--brand)); }
+.terms-check {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  margin-bottom: var(--s-3);
+  cursor: pointer;
+}
+.terms-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 
 .summary-card {
   padding: var(--s-4);
@@ -1242,6 +1330,42 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding: var(--s-4) var(--s-5);
   margin-bottom: var(--s-5);
 }
+.advice-card {
+  border-radius: var(--r-lg);
+  padding: var(--s-4);
+  margin-bottom: var(--s-5);
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+.advice-card.busy { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); background: color-mix(in srgb, var(--danger) 8%, var(--surface)); }
+.advice-card.later { border-color: color-mix(in srgb, var(--success) 40%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface)); }
+.advice-header {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
+}
+.advice-icon {
+  width: 28px; height: 28px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+  flex-shrink: 0;
+}
+.advice-icon svg { width: 16px; height: 16px; color: var(--brand); }
+.advice-card.busy .advice-icon svg { color: var(--danger); }
+.advice-card.later .advice-icon svg { color: var(--success); }
+.advice-card h4 {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+.advice-card p {
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  line-height: 1.5;
+}
 .journey h4 {
   font-size: var(--fs-xs);
   text-transform: uppercase;
@@ -1372,7 +1496,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   <header class="page-header">
     <div class="logo">
       <span class="logo-mark"></span>
-      TimeSlotPro
+      TimeSlotsPro
     </div>
     <div class="demo-badge">Demo</div>
   </header>
@@ -1383,7 +1507,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       Live at 38 European airports
     </div>
     <h1>Move more passengers,<br><em>same lanes</em>.</h1>
-    <p>TimeSlotPro is the demand-shaping booking layer for airport security. We integrate with your existing systems and drive passenger uptake from day one — no infrastructure build required.</p>
+    <p>TimeSlotsPro is the demand-shaping booking layer for airport security. We integrate with your existing systems and drive passenger uptake from day one — no infrastructure build required.</p>
     <div class="hero-cta-row">
       <button class="btn btn-primary btn-lg" id="openDrawerBtn" onclick="openDrawer()" type="button">Preview the passenger experience</button>
     </div>
@@ -1404,7 +1528,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   </section>
 
   <footer class="page-footer">
-    © TimeSlotPro · Enterprise infrastructure for airport security · SOC 2 Type II
+    © TimeSlotsPro · Enterprise infrastructure for airport security · SOC 2 Type II
   </footer>
 </main>
 
@@ -1424,7 +1548,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
       <div class="drawer-brand">
         <span class="drawer-brand-mark"></span>
-        TimeSlotPro
+        TimeSlotsPro
       </div>
 
       <button class="icon-btn" data-close aria-label="Close">
@@ -1482,7 +1606,7 @@ ul { margin: 0; padding: 0; list-style: none; }
           </div>
 
           <div class="field-group">
-            <label class="field-label" for="flightNo">Flight number <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400;">(optional)</span></label>
+            <label class="field-label" for="flightNo">Flight number</label>
             <input type="text" class="text-input" id="flightNo" placeholder="e.g. KL1071" autocomplete="off">
           </div>
         </div>
@@ -1498,23 +1622,39 @@ ul { margin: 0; padding: 0; list-style: none; }
           <h2 class="step-title">Choose your timeslot</h2>
           <p class="step-sub" id="step3Sub">Pick a 15-minute window to clear security.</p>
 
-          <div class="recommendation-banner">
-            <div class="recommendation-banner-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <div class="flight-info-banner">
+            <div class="flight-info-row">
+              <div class="flight-info-col">
+                <span class="flight-info-label">Flight</span>
+                <span class="flight-info-value tnum" id="flightInfoNo">KL1071</span>
+              </div>
+              <div class="flight-info-plane">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+              </div>
+              <div class="flight-info-col right">
+                <span class="flight-info-label">Departs</span>
+                <span class="flight-info-value tnum" id="flightInfoTime">10:35</span>
+              </div>
             </div>
-            <div class="recommendation-banner-text">
-              <h4>Recommended for your flight</h4>
-              <p>09:00 has the shortest queues. We've pre-selected it for you.</p>
+            <div class="flight-info-countdown">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <span id="flightInfoCountdown">Pick a slot that gets you to the gate in time.</span>
             </div>
           </div>
 
-          <div class="demand-legend">
-            <span class="legend-item"><span class="legend-dot q"></span>Quiet</span>
-            <span class="legend-item"><span class="legend-dot m"></span>Moderate</span>
-            <span class="legend-item"><span class="legend-dot b"></span>Busy</span>
+          <div class="busy-banner" role="alert">
+            <div class="busy-banner-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+            </div>
+            <div class="busy-banner-text">
+              <h4>Expected to be busy</h4>
+              <p>Make sure you're there by your slot. <strong>Earlier is great, later isn't an option.</strong></p>
+            </div>
           </div>
 
           <div class="slots-grid" id="slotsGrid"></div>
+
+          <p class="slots-footnote">Please ensure you allow enough time to complete check-in, baggage drop-off, and the journey to your gate. Booking a short-term slot does not guarantee timely arrival at the boarding gate.</p>
         </div>
         <div class="step-footer">
           <div class="footer-summary">
@@ -1539,6 +1679,7 @@ ul { margin: 0; padding: 0; list-style: none; }
               <label class="field-label" for="emailInput">Email</label>
               <input type="email" class="text-input" id="emailInput" placeholder="you@example.com" autocomplete="email">
             </div>
+            <p class="form-note">Please enter passenger names exactly as they appear on the passenger's passport or photo ID.</p>
             <div class="field-row">
               <div class="field">
                 <label class="field-label" for="firstNameInput">First name</label>
@@ -1550,9 +1691,15 @@ ul { margin: 0; padding: 0; list-style: none; }
               </div>
             </div>
           </div>
+
+          <p class="privacy-note">Your personal data will only be used to send you a confirmation email and to match your appointment with your boarding pass at the airport. <a href="/privacy" class="inline-link">Read our Privacy Notice</a>.</p>
         </div>
         <div class="step-footer">
-          <button class="btn btn-accent btn-block" id="step4Next">Confirm booking</button>
+          <label class="terms-check">
+            <input type="checkbox" id="termsCheck">
+            <span>I agree to the <a href="/terms" class="inline-link">terms of use</a></span>
+          </label>
+          <button class="btn btn-accent btn-block" id="step4Next" disabled>Confirm booking</button>
         </div>
       </section>
 
@@ -1568,7 +1715,7 @@ ul { margin: 0; padding: 0; list-style: none; }
           <div class="boarding-pass">
             <div class="bp-top">
               <div class="bp-brand">
-                <span class="bp-brand-name">TimeSlotPro</span>
+                <span class="bp-brand-name">TimeSlotsPro</span>
                 <span class="bp-pass-type">Security Pass</span>
               </div>
               <div class="bp-route">
@@ -1587,7 +1734,7 @@ ul { margin: 0; padding: 0; list-style: none; }
             <div class="bp-mid">
               <div class="bp-field">
                 <span class="bp-field-label">Security slot</span>
-                <span class="bp-field-value lg tnum" id="bpSlot">09:00 — 09:15</span>
+                <span class="bp-field-value lg tnum" id="bpSlot">09:00</span>
               </div>
               <div class="bp-field">
                 <span class="bp-field-label">Date</span>
@@ -1606,8 +1753,10 @@ ul { margin: 0; padding: 0; list-style: none; }
                 <span class="bp-field-value tnum" id="bpFlight">KL1071</span>
               </div>
               <div class="bp-field">
-                <span class="bp-field-label">Reference</span>
-                <span class="bp-field-value tnum" id="bpRef">TSP-8KQ2</span>
+                <span class="bp-field-label">Demand</span>
+                <span class="bp-field-value" id="bpDemand">
+                  <span class="journey-badge q" id="bpDemandBadge">Quiet</span>
+                </span>
               </div>
             </div>
 
@@ -1615,7 +1764,7 @@ ul { margin: 0; padding: 0; list-style: none; }
               <div class="qr-code" id="qrCode"></div>
               <div class="bp-bottom-text">
                 <h5>Show at security</h5>
-                <p>Scan this pass at the dedicated TimeSlotPro lane.</p>
+                <p>Scan this pass at the dedicated TimeSlotsPro lane.</p>
               </div>
             </div>
           </div>
@@ -1628,7 +1777,7 @@ ul { margin: 0; padding: 0; list-style: none; }
                 <div class="journey-stop-label" id="jArriveLabel">Arrive at airport</div>
               </div>
               <div class="journey-stop highlight">
-                <div class="journey-stop-time tnum" id="jSlot">09:00 — 09:15</div>
+                <div class="journey-stop-time tnum" id="jSlot">09:00</div>
                 <div class="journey-stop-label">Security timeslot <span class="journey-badge q" id="jBadge">Quiet</span></div>
               </div>
               <div class="journey-stop">
@@ -1636,6 +1785,16 @@ ul { margin: 0; padding: 0; list-style: none; }
                 <div class="journey-stop-label">Boarding · Gate D17</div>
               </div>
             </div>
+          </div>
+
+          <div class="advice-card" id="adviceCard">
+            <div class="advice-header">
+              <div class="advice-icon" id="adviceIcon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              </div>
+              <h4>Personalised timing advice</h4>
+            </div>
+            <p id="adviceText">Arrive on time for your slot.</p>
           </div>
 
         </div>
@@ -1671,31 +1830,26 @@ const AIRPORTS = [
 ];
 
 // Build 04:00 → 12:00 in 15-min slots, with demand levels and prices
+const DEPARTURE_MIN = 10 * 60 + 35; // 10:35
 function buildSlots() {
   const slots = [];
-  const start = 4 * 60;   // minutes from midnight
-  const end   = 12 * 60;
-  for (let m = start; m < end; m += 15) {
+  // from 180 to 105 minutes before departure, 15m increments
+  for (let mins = 180; mins >= 105; mins -= 15) {
+    const m = DEPARTURE_MIN - mins;
     const h = Math.floor(m / 60);
     const mm = m % 60;
-    const h2 = Math.floor((m + 15) / 60);
-    const mm2 = (m + 15) % 60;
     const time = `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
-    const timeEnd = `${String(h2).padStart(2, '0')}:${String(mm2).padStart(2, '0')}`;
     let level;
-    if (m < 5 * 60 + 30) level = 'q';
-    else if (m < 6 * 60) level = 'm';
-    else if (m < 8 * 60) level = 'b';
-    else if (m < 9 * 60) level = 'm';
-    else if (m < 11 * 60) level = 'q';
-    else if (m < 11 * 60 + 30) level = 'm';
-    else level = 'q';
-    slots.push({ time, timeEnd, level, id: time });
+    if (mins >= 165) level = 'q';
+    else if (mins >= 135) level = 'm';
+    else level = 'b';
+    slots.push({ time, level, id: time, minsBefore: mins });
   }
   return slots;
 }
 const SLOTS = buildSlots();
-const RECOMMENDED_ID = '09:00';
+// Recommended: middle slot (150 min before departure → 08:05)
+const RECOMMENDED_ID = SLOTS[Math.floor(SLOTS.length / 2)].id;
 const DEMAND_LABEL = { q: 'Quiet', m: 'Moderate', b: 'Busy' };
 
 /* ============================================================
@@ -1846,7 +2000,7 @@ function renderDayPills() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const days = [];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 4; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() + i);
     days.push(d);
@@ -1892,8 +2046,35 @@ $('#flightNo').addEventListener('input', e => state.flight = e.target.value);
 
 $('#step2Next').addEventListener('click', () => {
   renderSlots();
+  renderFlightInfo();
   goToStep(3);
 });
+
+function renderFlightInfo() {
+  const flightNo = (state.flight && state.flight.trim()) || 'KL1071';
+  const departHour = 10, departMin = 35;
+  $('#flightInfoNo').textContent = flightNo.toUpperCase();
+  $('#flightInfoTime').textContent = `${String(departHour).padStart(2,'0')}:${String(departMin).padStart(2,'0')}`;
+
+  const depart = new Date(state.date);
+  depart.setHours(departHour, departMin, 0, 0);
+  const now = new Date();
+  const diffMs = depart - now;
+  const el = $('#flightInfoCountdown');
+  if (diffMs <= 0) {
+    el.innerHTML = 'Your flight has already departed — pick another date.';
+    return;
+  }
+  const totalMin = Math.floor(diffMs / 60000);
+  const days = Math.floor(totalMin / 1440);
+  const hours = Math.floor((totalMin % 1440) / 60);
+  const mins = totalMin % 60;
+  let gap;
+  if (days > 0) gap = `${days}d ${hours}h`;
+  else if (hours > 0) gap = `${hours}h ${mins}m`;
+  else gap = `${mins}m`;
+  el.innerHTML = `<strong>${gap}</strong> until departure — choose a slot that works for you.`;
+}
 
 renderDayPills();
 updatePax();
@@ -1912,7 +2093,6 @@ function renderSlots() {
     return `
       <button class="slot ${s.level} ${isSelected ? 'selected' : ''} ${isRecommended ? 'recommended' : ''}" data-id="${s.id}">
         <span class="slot-time">${s.time}</span>
-        <span class="slot-meta"><span class="legend-dot ${s.level}"></span>${DEMAND_LABEL[s.level]}</span>
       </button>
     `;
   }).join('');
@@ -1930,7 +2110,7 @@ function updateStep3Footer() {
     step3Selected.textContent = '—';
     return;
   }
-  step3Selected.textContent = `${state.slot.time} – ${state.slot.timeEnd}`;
+  step3Selected.textContent = state.slot.time;
 }
 $('#step3Next').addEventListener('click', () => {
   renderSummary();
@@ -1946,7 +2126,7 @@ function renderSummary() {
   card.innerHTML = `
     <div class="summary-row"><dt>Airport</dt><dd>${state.airport.iata} · ${state.airport.city}</dd></div>
     <div class="summary-row"><dt>Date</dt><dd>${formatDate(state.date)}</dd></div>
-    <div class="summary-row"><dt>Time</dt><dd>${state.slot.time} – ${state.slot.timeEnd}</dd></div>
+    <div class="summary-row"><dt>Time</dt><dd>${state.slot.time}</dd></div>
     <div class="summary-row"><dt>Travellers</dt><dd>${state.passengers}</dd></div>
   `;
 }
@@ -1954,7 +2134,12 @@ $('#emailInput').addEventListener('input',     e => state.email     = e.target.v
 $('#firstNameInput').addEventListener('input', e => state.firstName = e.target.value);
 $('#lastNameInput').addEventListener('input',  e => state.lastName  = e.target.value);
 
+$('#termsCheck').addEventListener('change', e => {
+  $('#step4Next').disabled = !e.target.checked;
+});
+
 $('#step4Next').addEventListener('click', () => {
+  if (!$('#termsCheck').checked) return;
   updateConfirmation();
   goToStep(5);
 });
@@ -1966,11 +2151,14 @@ function updateConfirmation() {
   if (!state.airport || !state.slot || !state.date) return;
   $('#bpIata').textContent = state.airport.iata;
   $('#bpName').textContent = `${state.airport.name} · ${state.airport.city}`;
-  $('#bpSlot').textContent = `${state.slot.time} — ${state.slot.timeEnd}`;
+  $('#bpSlot').textContent = state.slot.time;
   $('#bpDate').textContent = formatDate(state.date, true);
   $('#bpPax').textContent  = state.passengers;
   $('#bpFlight').textContent = state.flight || 'KL1071';
-  $('#bpRef').textContent  = generateRef();
+
+  const bpDemandBadge = $('#bpDemandBadge');
+  bpDemandBadge.className = 'journey-badge ' + state.slot.level;
+  bpDemandBadge.textContent = DEMAND_LABEL[state.slot.level];
 
   const fullName = ((state.firstName || 'Alex') + ' ' + (state.lastName || 'Morgan')).trim();
   $('#bpName2').textContent = fullName;
@@ -1981,7 +2169,7 @@ function updateConfirmation() {
   // Journey times: arrive 30 min before slot, depart 95 min after slot start
   const slotMin = parseTime(state.slot.time);
   $('#jArrive').textContent = formatMinutes(slotMin - 30);
-  $('#jSlot').textContent   = `${state.slot.time} — ${state.slot.timeEnd}`;
+  $('#jSlot').textContent   = state.slot.time;
   $('#jDepart').textContent = formatMinutes(slotMin + 95);
   $('#jArriveLabel').textContent = `Arrive at ${state.airport.city}`;
 
@@ -1989,7 +2177,25 @@ function updateConfirmation() {
   badge.className = 'journey-badge ' + state.slot.level;
   badge.textContent = DEMAND_LABEL[state.slot.level];
 
+  updateAdvice();
   renderQR();
+}
+
+function updateAdvice() {
+  const card = $('#adviceCard');
+  const text = $('#adviceText');
+  const recMin = parseTime(RECOMMENDED_ID);
+  const slotMin = parseTime(state.slot.time);
+  card.classList.remove('busy', 'later');
+  if (slotMin < recMin || state.slot.level === 'b') {
+    card.classList.add('busy');
+    text.textContent = "It's expected to be busy. Please plan enough buffer time, to come in time or preferably earlier. You will not be allowed to use the service more than 10 minutes late.";
+  } else if (slotMin > recMin) {
+    card.classList.add('later');
+    text.textContent = 'Make sure to arrive within 10 minutes of your reservation time.';
+  } else {
+    text.textContent = 'Arrive on time for your slot — within 10 minutes of your reservation.';
+  }
 }
 
 function formatDate(d, withYear = false) {
